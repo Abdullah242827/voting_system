@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Voter Dashboard</title>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div class="card">
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="register.html">Register</a>
+            <a href="login.html">Login</a>
+            <a href="about.html">About Us</a>
+            <a href="contact.html">Contact Us</a>
+        </nav>
+        <div id="userGreeting" style="text-align:center; margin-bottom:10px;"></div>
+        <h1>Voter Dashboard</h1>
+        <h2>Actions</h2>
+        <div class="button-container">
+            <a class="button" href="castVote.html">Cast Your Vote</a>
+            <a class="button" href="checkResults.html">Check Results</a>
+        </div>
+        <div style="text-align:right;max-width:600px;margin:0 auto;">
+            <button onclick="refreshVotes()" class="button" style="background:#27ae60;">Refresh Votes</button>
+        </div>
+        <div id="myVotes" style="margin: 30px auto;"></div>
+        <div style="text-align:center;">
+            <button onclick="window.location.href='index.html'" class="back-button">Back to Home</button>
+            <button onclick="window.location.href='login.html'" class="logout-button">Logout</button>
+            <button id="downloadVotesBtn" class="export-button" style="margin-left:10px;">Download My Votes</button>
+        </div>
+    </div>
+    <script>
+    let lastVotesData = [];
+    document.addEventListener('DOMContentLoaded', function() {
+        // Highlight nav
+        const navLinks = document.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+            if (window.location.pathname.endsWith(link.getAttribute('href'))) {
+                link.classList.add('active');
+            }
+        });
+
+        // Show username greeting
+        fetch('getUserInfo.php', { credentials: 'include' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.username) {
+                    document.getElementById('userGreeting').innerHTML = `<strong>Welcome, ${data.username}!</strong>`;
+                }
+            });
+
+        // Show user's votes
+        loadVotes();
+        document.getElementById('downloadVotesBtn').addEventListener('click', function() {
+            if (!lastVotesData.length) {
+                alert('No votes to download!');
+                return;
+            }
+            let csv = "Poll,Voted For,Date\n";
+            lastVotesData.forEach(vote => {
+                csv += `"${vote.election.title}","${vote.candidate.name}","${vote.vote_time}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "my_votes.csv";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+    });
+    function refreshVotes() {
+        loadVotes();
+    }
+    function loadVotes() {
+        fetch('getUserVotes.php', { credentials: 'include' })
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById('myVotes');
+                if (!data.success || !data.votes || data.votes.length === 0) {
+                    lastVotesData = [];
+                    container.innerHTML = `<h3 style="text-align:center;">Your Votes</h3><p style="text-align:center;">You have not voted in any election yet.</p>`;
+                    return;
+                }
+                lastVotesData = data.votes;
+                // Add a flex wrapper to center the table
+                let html = `<h3 style="text-align:center;">Your Votes</h3>
+                    <div class="votes-table-wrapper">
+                        <table class="votes-table">
+                        <thead>
+                            <tr>
+                                <th>Poll</th>
+                                <th>Voted For</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+                data.votes.forEach(vote => {
+                    html += `<tr>
+                        <td>${vote.election.title}</td>
+                        <td>${vote.candidate.name}</td>
+                        <td>${vote.vote_time}</td>
+                    </tr>`;
+                });
+                html += "</tbody></table></div>";
+                container.innerHTML = html;
+            });
+    }
+    </script>
+</body>
+</html>

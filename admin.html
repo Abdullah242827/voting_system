@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Admin Dashboard</title>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div class="card">
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="register.html">Register</a>
+            <a href="login.html">Login</a>
+            <a href="about.html">About Us</a>
+            <a href="contact.html">Contact Us</a>
+        </nav>
+        <h1>Admin Dashboard</h1>
+        <h2>Admin Actions</h2>
+        <div class="button-container">
+            <a class="button" href="createPoll.html">Create Poll</a>
+            <a class="button" href="checkVotes.html">Check Votes</a>
+            <a class="button" href="overallResults.html">View Overall Results</a>
+        </div>
+        <button class="export-button" onclick="exportToCSV('voting_data.csv')">Download Results Spreadsheet</button>
+        <button onclick="window.location.href='login.html'" class="logout-button">Logout</button>
+        <div style="text-align:center; margin-top:30px;">
+            <button id="showVotersBtn" class="button" style="background:#8e44ad;">Show Total Voters</button>
+            <div id="totalVotersBox" style="margin-top:15px;display:none;"></div>
+        </div>
+        <div style="text-align:center; margin-top:30px;">
+            <button id="showPollsBtn" class="button" style="background:#2980b9;">Show All Polls</button>
+            <div id="allPollsBox" style="margin-top:15px;display:none;"></div>
+        </div>
+        <div style="text-align:center; margin-top:30px;">
+            <button id="showUsersBtn" class="button" style="background:#16a085;">Show All Users</button>
+            <div id="allUsersBox" style="margin-top:15px;display:none;"></div>
+        </div>
+    </div>
+    <script>
+    document.getElementById('showVotersBtn').addEventListener('click', function() {
+        fetch('getTotalVoters.php', { credentials: 'include' })
+            .then(res => res.json())
+            .then(data => {
+                const box = document.getElementById('totalVotersBox');
+                if (data.success) {
+                    box.style.display = "block";
+                    box.innerHTML = `<div style="display:inline-block;padding:18px 36px;background:#f0f8ff;border-radius:12px;box-shadow:0 2px 8px rgba(44,62,80,0.10);font-size:1.3em;color:#2980b9;">
+                        <strong>Total Registered Voters:</strong> ${data.count}
+                    </div>`;
+                } else {
+                    box.style.display = "block";
+                    box.innerHTML = `<span style="color:red;">Could not fetch voter count.</span>`;
+                }
+            });
+    });
+    document.getElementById('showPollsBtn').addEventListener('click', function() {
+        fetch('getPolls.php', { credentials: 'include' })
+            .then(res => res.json())
+            .then(data => {
+                const box = document.getElementById('allPollsBox');
+                if (!data || data.length === 0) {
+                    box.style.display = "block";
+                    box.innerHTML = "<span style='color:red;'>No polls found.</span>";
+                    return;
+                }
+                let html = `<div style="overflow-x:auto;"><table class="votes-table" style="margin:0 auto;">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+                data.forEach(poll => {
+                    html += `<tr>
+                        <td>${poll.title}</td>
+                        <td style="color:${poll.status==='ongoing'?'#27ae60':(poll.status==='ended'?'#e74c3c':'#f39c12')};font-weight:bold;">${poll.status.charAt(0).toUpperCase() + poll.status.slice(1)}</td>
+                        <td>${poll.start_date ? poll.start_date.replace('T',' ').slice(0,16) : ''}</td>
+                        <td>${poll.end_date ? poll.end_date.replace('T',' ').slice(0,16) : ''}</td>
+                    </tr>`;
+                });
+                html += "</tbody></table></div>";
+                box.style.display = "block";
+                box.innerHTML = html;
+            });
+    });
+    document.getElementById('showUsersBtn').addEventListener('click', function() {
+        fetch('getAllUsers.php', { credentials: 'include' })
+            .then(res => res.json())
+            .then(data => {
+                const box = document.getElementById('allUsersBox');
+                if (!data.success || !data.users || data.users.length === 0) {
+                    box.style.display = "block";
+                    box.innerHTML = "<span style='color:red;'>No users found.</span>";
+                    return;
+                }
+                let html = `<div style="overflow-x:auto;"><table class="votes-table" style="margin:0 auto;">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Registered</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+                data.users.forEach(user => {
+                    html += `<tr>
+                        <td>${user.username}</td>
+                        <td style="color:${user.role==='admin'?'#e67e22':'#2980b9'};font-weight:bold;">${user.role.charAt(0).toUpperCase() + user.role.slice(1)}</td>
+                        <td>${user.created_at ? user.created_at.replace('T',' ').slice(0,16) : ''}</td>
+                    </tr>`;
+                });
+                html += "</tbody></table></div>";
+                box.style.display = "block";
+                box.innerHTML = html;
+            });
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Overall Results</title>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="register.html">Register</a>
+        <a href="login.html">Login</a>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact Us</a>
+    </nav>
+    <h1>Overall Poll Results</h1>
+    <div id="overallResults"></div>
+    <button onclick="window.location.href='admin.html'">Back to Admin Dashboard</button>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('getOverallResults.php', { credentials: 'include' })
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById('overallResults');
+                if (!data || data.length === 0) {
+                    container.innerHTML = "<p>No results available.</p>";
+                    return;
+                }
+                let html = "";
+                data.forEach(election => {
+                    html += `<div class="section-card" style="margin-bottom:32px;">
+                        <h2 style="text-align:center;">${election.title}</h2>
+                        <p style="text-align:center;color:#888;">${election.description || ""}</p>
+                        <div style="overflow-x:auto;">
+                        <table class="votes-table">
+                            <thead>
+                                <tr>
+                                    <th>Candidate</th>
+                                    <th>Description</th>
+                                    <th>Votes</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                    // Find max votes for highlight
+                    let maxVotes = Math.max(...election.candidates.map(c => c.votes));
+                    election.candidates.forEach(candidate => {
+                        html += `<tr${candidate.votes === maxVotes && maxVotes > 0 ? ' style="background:#d4edda;font-weight:bold;"' : ''}>
+                            <td>${candidate.name}</td>
+                            <td>${candidate.description || ""}</td>
+                            <td>${candidate.votes}</td>
+                        </tr>`;
+                    });
+                    html += `</tbody></table></div></div>`;
+                });
+                container.innerHTML = html;
+            });
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Check Results</title>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="register.html">Register</a>
+        <a href="login.html">Login</a>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact Us</a>
+    </nav>
+    <h1>Check Results</h1>
+    <button id="checkVotesButton">Check My Votes</button>
+    <div id="results"></div>
+    <button onclick="window.location.href='voter.html'" class="back-button">Back to Voter Dashboard</button>
+
+    <script>
+    document.getElementById('checkVotesButton').addEventListener('click', function() {
+        fetch('getUserVotes.php', { credentials: 'include' })
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById('results');
+                if (!data.success || !data.votes || data.votes.length === 0) {
+                    container.innerHTML = "<p>You have not voted in any election yet.</p>";
+                    return;
+                }
+                let html = `<h3>Your Votes</h3>
+                    <table style="width:100%;border-collapse:collapse;">
+                    <thead>
+                        <tr>
+                            <th>Poll</th>
+                            <th>Voted For</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+                data.votes.forEach(vote => {
+                    html += `<tr>
+                        <td style="padding:6px;border-bottom:1px solid #ddd;">${vote.election.title}</td>
+                        <td style="padding:6px;border-bottom:1px solid #ddd;">${vote.candidate.name}</td>
+                        <td style="padding:6px;border-bottom:1px solid #ddd;">${vote.vote_time}</td>
+                    </tr>`;
+                });
+                html += "</tbody></table>";
+                container.innerHTML = html;
+            });
+    });
+    </script>
+</body>
+</html>

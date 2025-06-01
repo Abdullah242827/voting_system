@@ -1,0 +1,444 @@
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+h1, h2 {
+    color: #2c3e50;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+/* Navigation Bar */
+nav {
+    background-color: #7d9b9f; /* Greyish blue-brown color */
+    padding: 15px 0; /* Increased padding for a more spacious look */
+    text-align: center;
+    border-radius: 8px; /* Slightly more rounded corners */
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+}
+
+/* Navigation Links */
+nav a {
+    margin: 0 20px; /* Increased margin for better spacing */
+    text-decoration: none;
+    color: white; /* White text color */
+    font-weight: bold;
+    font-size: 1.1em; /* Slightly larger font size */
+    transition: color 0.3s, transform 0.3s; /* Smooth color and transform transition */
+}
+
+/* Hover Effect for Links */
+nav a:hover {
+    color: #ddee5a; /* Light color on hover */
+    transform: scale(1.1); /* Slightly enlarge the link on hover */
+}
+
+/* Active Link Style */
+nav a.active {
+    border-bottom: 2px solid #ecf0f1; /* Underline for active link */
+    padding-bottom: 5px; /* Space between text and underline */
+}
+
+/* Button Styles */
+.button-container {
+    text-align: center;
+    margin: 20px 0;
+    margin-bottom: 30px;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px;
+    background-color: #2980b9;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.button:hover {
+    background-color: #3498db;
+    transform: scale(1.05);
+}
+
+.back-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.back-button:hover {
+    background-color: #c0392b;
+    transform: scale(1.05);
+}
+.logout-button {
+    background-color: #ff4d4d; /* Red background */
+    color: white; /* White text color */
+    border: none; /* No border */
+    padding: 10px 20px; /* Padding for the button */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 1em; /* Font size */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s, transform 0.3s; /* Smooth transition */
+}
+
+/* Hover Effect */
+.logout-button:hover {
+    background-color: #e60000; /* Darker red on hover */
+    transform: translateY(-2px); /* Slight lift effect on hover */
+}
+
+/* Focus Effect */
+.logout-button:focus {
+    outline: none; /* Remove default outline */
+    box-shadow: 0 0 5px rgba(255, 77, 77, 0.5); /* Add a glow effect */
+}
+
+.features, .get-started {
+    margin: 20px;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.features {
+    background-color: #f0f8ff; /* Light blue background */
+    border: 1px solid #007bff; /* Blue border */
+}
+
+.get-started {
+    background-color: #fff3cd; /* Light yellow background */
+    border: 1px solid #ffc107; /* Yellow border */
+}
+
+footer {
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+footer h2 {
+    margin: 0;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+/* Form Styles */
+form {
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(255, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+input, select, button {
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+input:focus, select:focus, button:focus {
+    border-color: #2980b9;
+    outline: none;
+}
+
+button {
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #3498db;
+}
+
+/* Polls and Results */
+#polls, #results, #overallResults {
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+}
+
+.poll {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.poll-option {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 5px 0;
+    transition: background-color 0.3s;
+    cursor: pointer;
+}
+
+.poll-option:hover {
+    background-color: #e1f5fe;
+}
+
+/* Results Section */
+.poll-result {
+    margin-bottom: 15px;
+}
+
+.poll-option-result {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 5px 0;
+}
+
+/* Table Styles */
+table {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(44,62,80,0.10);
+    margin: 20px 0;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+}
+th, td {
+    padding: 14px 12px;
+    text-align: left;
+    font-size: 1em;
+}
+th {
+    background: linear-gradient(90deg, #2980b9 80%, #6dd5fa 100%);
+    color: #fff;
+    font-weight: bold;
+    border-bottom: 2px solid #2980b9;
+}
+tr {
+    transition: background 0.2s;
+}
+tr:nth-child(even) {
+    background: #f6fafd;
+}
+tr:hover {
+    background: #e1f5fe;
+}
+td {
+    border-bottom: 1px solid #eaeaea;
+}
+table thead tr:first-child th:first-child {
+    border-top-left-radius: 10px;
+}
+table thead tr:first-child th:last-child {
+    border-top-right-radius: 10px;
+}
+table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 10px;
+}
+table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 10px;
+}
+
+/* Votes Table Styles */
+.votes-table-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(44,62,80,0.10);
+    padding: 18px 0 10px 0;
+    margin: 0 auto 20px auto;
+    max-width: 700px;
+}
+
+.votes-table {
+    min-width: 340px;
+    max-width: 650px;
+    border-radius: 14px;
+    box-shadow: 0 6px 24px rgba(44,62,80,0.13);
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #e0e7ef;
+    font-size: 1.12em;
+}
+
+.votes-table th, .votes-table td {
+    padding: 18px 28px;
+    font-size: 1.08em;
+    text-align: center;
+}
+
+.votes-table th {
+    background: linear-gradient(90deg, #2980b9 80%, #6dd5fa 100%);
+    color: #fff;
+    font-weight: bold;
+    border-bottom: 3px solid #2980b9;
+    letter-spacing: 1px;
+}
+
+.votes-table tr:nth-child(even) {
+    background: #f0f6ff;
+}
+
+.votes-table tr:nth-child(odd) {
+    background: #eaf3fb;
+}
+
+.votes-table tr:hover {
+    background: #d0eaff;
+    transition: background 0.2s;
+}
+
+.votes-table td {
+    border-bottom: 1.5px solid #eaeaea;
+}
+
+.votes-table thead tr:first-child th:first-child {
+    border-top-left-radius: 14px;
+}
+.votes-table thead tr:first-child th:last-child {
+    border-top-right-radius: 14px;
+}
+.votes-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 14px;
+}
+.votes-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 14px;
+}
+
+/* Toast/Message Box */
+#msgBox {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    border-radius: 6px;
+    z-index: 9999;
+    font-weight: bold;
+    font-size: 1.1em;
+    display: none;
+    min-width: 200px;
+    text-align: center;
+}
+
+/* How It Works Section */
+.how-it-works {
+    background: #f8f8f8;
+    border-radius: 8px;
+    margin: 20px auto;
+    max-width: 700px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.how-it-works ol {
+    padding-left: 20px;
+}
+.how-it-works li {
+    margin-bottom: 12px;
+}
+
+/* Card Styles */
+.card, .section-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 6px 24px rgba(44,62,80,0.10);
+    padding: 32px 24px;
+    margin: 32px auto 24px auto;
+    max-width: 750px;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    form {
+        width: 90%;
+    }
+
+    nav {
+        display: flex;
+        flex-direction: column;
+    }
+
+    nav a {
+        margin: 5px 0;
+    }
+}
+
+/* Additional Styles for Better UX */
+p {
+    text-align: center;
+}
+
+input::placeholder {
+    color: #aaa;
+}
+
+textarea {
+    resize: none;
+}
+
+textarea:focus {
+    border-color: #2980b9;
+}
+
+/* Footer Styles */
+footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: #777;
+}
+
+.export-button {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.export-button:hover {
+    background-color: #219150;
+}
+.export-button:active {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Shadow when button is pressed */
+    transform: translateY(2px); /* Slightly move down when pressed */
+}

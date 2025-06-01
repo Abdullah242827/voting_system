@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Check Votes</title>
+     <script src="script.js" defer></script>
+</head>
+<body>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="register.html">Register</a>
+        <a href="login.html">Login</a>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact Us</a>
+    </nav>
+    <h1>Check Votes</h1>
+    <input type="text" id="checkUsername" placeholder="Search Voter Username">
+    <button id="checkVotesButton">Check Votes</button>
+    <!-- Display voter list below search bar -->
+    <div id="voterList" style="max-width:600px;margin:10px auto 20px auto;"></div>
+    <div id="voterPagination" style="text-align:center;margin-bottom:20px;"></div>
+    <!-- Display vote results here -->
+    <div id="voteResults"></div>
+    <button onclick="window.location.href='admin.html'">Back to Admin Dashboard</button>
+    <script>
+let allVoters = [];
+let currentPage = 1;
+let totalPages = 1;
+let lastSearch = "";
+let currentSort = "username";
+let currentOrder = "asc";
+
+function renderVoterList() {
+    const listDiv = document.getElementById('voterList');
+    if (allVoters.length === 0) {
+        listDiv.innerHTML = "<p>No voters found.</p>";
+        document.getElementById('voterPagination').innerHTML = "";
+        return;
+    }
+    let usernameArrow = currentSort === "username" ? (currentOrder === "asc" ? " ▲" : " ▼") : "";
+    let regArrow = currentSort === "created_at" ? (currentOrder === "asc" ? " ▲" : " ▼") : "";
+    let html = `<table style='width:100%;border-collapse:collapse;'>
+        <thead>
+            <tr>
+                <th style="cursor:pointer;" onclick="changeSort('username')">Username${usernameArrow}</th>
+                <th style="cursor:pointer;" onclick="changeSort('created_at')">Registered${regArrow}</th>
+            </tr>
+        </thead>
+        <tbody>`;
+    allVoters.forEach(voter => {
+        html += `<tr>
+            <td style="padding:6px;border-bottom:1px solid #ddd;">
+                <a href="#" style="color:#2980b9;text-decoration:underline;" onclick="document.getElementById('checkUsername').value='${voter.username}';document.getElementById('checkVotesButton').click();return false;">
+                    ${voter.username}
+                </a>
+            </td>
+            <td style="padding:6px;border-bottom:1px solid #ddd;">${voter.created_at ? voter.created_at.replace('T',' ').slice(0,16) : ''}</td>
+        </tr>`;
+    });
+    html += "</tbody></table>";
+    listDiv.innerHTML = html;
+}
+
+function renderPagination() {
+    const pagDiv = document.getElementById('voterPagination');
+    if (totalPages <= 1) {
+        pagDiv.innerHTML = "";
+        return;
+    }
+    let html = '';
+    if (currentPage > 1) {
+        html += `<button onclick="fetchVoters(lastSearch, ${currentPage-1}, currentSort, currentOrder)" class="button" style="padding:4px 12px;margin:2px;">&laquo; Prev</button>`;
+    }
+    html += `<span style="margin:0 10px;">Page ${currentPage} of ${totalPages}</span>`;
+    if (currentPage < totalPages) {
+        html += `<button onclick="fetchVoters(lastSearch, ${currentPage+1}, currentSort, currentOrder)" class="button" style="padding:4px 12px;margin:2px;">Next &raquo;</button>`;
+    }
+    pagDiv.innerHTML = html;
+}
+
+function fetchVoters(search = "", page = 1, sort = "username", order = "asc") {
+    lastSearch = search;
+    currentSort = sort;
+    currentOrder = order;
+    let url = 'getAllVoters.php?page=' + page + '&perPage=10&sort=' + sort + '&order=' + order;
+    if (search) {
+        url += '&search=' + encodeURIComponent(search);
+    }
+    fetch(url, { credentials: 'include' })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && Array.isArray(data.voters)) {
+                allVoters = data.voters;
+                currentPage = data.page || 1;
+                totalPages = Math.ceil((data.total || 0) / (data.perPage || 10));
+                currentSort = data.sort || "username";
+                currentOrder = data.order || "asc";
+                renderVoterList();
+                renderPagination();
+            } else {
+                document.getElementById('voterList').innerHTML = "<p>Could not load voter list.</p>";
+                document.getElementById('voterPagination').innerHTML = "";
+            }
+        });
+}
+
+function changeSort(sortField) {
+    let newOrder = "asc";
+    if (currentSort === sortField && currentOrder === "asc") {
+        newOrder = "desc";
+    }
+    fetchVoters(lastSearch, 1, sortField, newOrder);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetchVoters();
+    document.getElementById('checkUsername').addEventListener('input', function() {
+        fetchVoters(this.value, 1, currentSort, currentOrder);
+    });
+    document.getElementById('checkVotesButton')?.addEventListener('click', function() {
+        const username = document.getElementById('checkUsername').value.trim();
+        if (!username) {
+            alert('Please enter a username.');
+            return;
+        }
+        fetch('getVotesForUser.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ username })
+        })
+        .then(res => res.json())
+        .then(data => {
+            const container = document.getElementById('voteResults');
+            if (!data.success) {
+                container.innerHTML = `<p style="color:red;">${data.message}</p>`;
+                return;
+            }
+            if (!data.votes || data.votes.length === 0) {
+                container.innerHTML = "<p>No votes found for this user.</p>";
+                return;
+            }
+            let html = `<h3>Votes for <span style="color:#2980b9">${username}</span></h3>
+                <table style="width:100%;border-collapse:collapse;">
+                <thead>
+                    <tr>
+                        <th>Poll</th>
+                        <th>Voted For</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            data.votes.forEach(vote => {
+                html += `<tr>
+                    <td style="padding:6px;border-bottom:1px solid #ddd;">${vote.election.title}</td>
+                    <td style="padding:6px;border-bottom:1px solid #ddd;">${vote.candidate.name}</td>
+                    <td style="padding:6px;border-bottom:1px solid #ddd;">${vote.vote_time}</td>
+                </tr>`;
+            });
+            html += "</tbody></table>";
+            container.innerHTML = html;
+        });
+    });
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Cast Your Vote</title>
+    <script src="script.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const pollsContainer = document.getElementById('polls');
+
+            // Fetch user's votes to know which elections they've already voted in
+            let votedElections = [];
+            fetch('getUserVotes.php', { credentials: 'include' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && Array.isArray(data.votes)) {
+                        votedElections = data.votes.map(v => v.election.election_id);
+                    }
+                })
+                .finally(loadPolls);
+
+            function loadPolls() {
+                fetch('getPolls.php')
+                    .then(response => response.json())
+                    .then(polls => {
+                        pollsContainer.innerHTML = '';
+                        if (!polls || polls.length === 0) {
+                            pollsContainer.textContent = 'No polls available.';
+                            return;
+                        }
+                        // Only show ongoing polls
+                        const ongoingPolls = polls.filter(poll => poll.status === 'ongoing');
+                        if (ongoingPolls.length === 0) {
+                            pollsContainer.textContent = 'No ongoing polls available for voting.';
+                            return;
+                        }
+                        ongoingPolls.forEach(poll => {
+                            const pollElement = createPollElement(poll);
+                            pollsContainer.appendChild(pollElement);
+                        });
+                    })
+                    .catch(error => {
+                        pollsContainer.textContent = 'Error loading polls.';
+                        console.error('Error fetching polls:', error);
+                    });
+            }
+
+            function createPollElement(poll) {
+                const pollDiv = document.createElement('div');
+                pollDiv.classList.add('poll');
+
+                const title = document.createElement('h2');
+                title.textContent = poll.title;
+                pollDiv.appendChild(title);
+
+                const description = document.createElement('p');
+                description.textContent = poll.description;
+                pollDiv.appendChild(description);
+
+                const candidatesList = document.createElement('ul');
+                poll.candidates.forEach(candidate => {
+                    const candidateItem = document.createElement('li');
+                    const voteButton = document.createElement('button');
+                    voteButton.textContent = `Vote for ${candidate.name}`;
+                    // Disable button if already voted in this poll
+                    if (votedElections.includes(poll.election_id)) {
+                        voteButton.disabled = true;
+                        voteButton.textContent = "Already Voted";
+                        voteButton.style.background = "#aaa";
+                        voteButton.style.cursor = "not-allowed";
+                    } else {
+                        voteButton.addEventListener('click', function () {
+                            vote(poll.election_id, candidate.candidate_id);
+                        });
+                    }
+                    candidateItem.textContent = candidate.name + ' ';
+                    candidateItem.appendChild(voteButton);
+                    candidatesList.appendChild(candidateItem);
+                });
+                pollDiv.appendChild(candidatesList);
+
+                // Show a message if already voted
+                if (votedElections.includes(poll.election_id)) {
+                    const votedMsg = document.createElement('div');
+                    votedMsg.style.color = "#4caf50";
+                    votedMsg.style.marginTop = "8px";
+                    votedMsg.textContent = "You have already voted in this poll.";
+                    pollDiv.appendChild(votedMsg);
+                }
+
+                return pollDiv;
+            }
+
+            // Refresh Polls button
+            document.getElementById('refreshPollsBtn').addEventListener('click', function() {
+                loadPolls();
+            });
+        });
+    </script>
+</head>
+<body>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="register.html">Register</a>
+        <a href="login.html">Login</a>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact Us</a>
+    </nav>
+    <h1>Cast Your Vote</h1>
+    <div style="text-align:right;max-width:700px;margin:0 auto 10px auto;">
+        <button id="refreshPollsBtn" class="button" style="background:#27ae60;">Refresh Polls</button>
+    </div>
+    <div id="polls"></div>
+    <button onclick="window.location.href='voter.html'" class="back-button">Back to Voter Dashboard</button>
+</body>
+</html>
